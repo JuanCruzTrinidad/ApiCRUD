@@ -43,6 +43,7 @@ export async function addCant(req: Request, res: Response): Promise <Response>{
     const productSelec = new Product (product);
 
     const cant = productSelec.cant + req.body.cant;
+    if(productSelec.cant == 0){await Product.findByIdAndUpdate(id, {cant,inStock: true}, {new: true})}
     const productUpdate = await Product.findByIdAndUpdate(id, {cant}, {new: true});
 
     return res.json({
@@ -57,13 +58,18 @@ export async function subCant(req: Request, res: Response): Promise <Response>{
 
     const product = await Product.findById(id);
     const productSelec = new Product(product);
+    const cant = (productSelec.cant - req.body.cant);
 
-    if(productSelec.cant <= req.body.cant){
-        deleteProduct(req, res);
-        req.body.inStock = false;
+    if(productSelec.cant<req.body.cant){
+        alert('La cantidad que se quiere eliminar es menor a la que se tiene');
+        console.log("Error, la cantidad a eliminar es menor a la existente")
     }
-    else{
-        const cant = (productSelec.cant - req.body.cant);
+
+    if(productSelec.cant == req.body.cant){
+        const productUpdate = await Product.findByIdAndUpdate(id, { cant, inStock: false }, {new: true});
+
+    }
+    if (productSelec.cant> req.body.cant){
         const productUpdate = await Product.findByIdAndUpdate(id, { cant }, {new: true});
 
         return res.json({
@@ -85,7 +91,28 @@ export async function updateProduct(req: Request, res: Response): Promise <Respo
         price
     }, {new: true} )
     return res.json({
-        message: 'Cantidad agregada.',
+        message: 'Producto actualizado.',
         updateProduct
     })
+}
+
+export async function selectProduct(req: Request, res:Response): Promise<Response> {
+    const { id } = req.params;
+    const product = await Product.findByIdAndUpdate(id, { seleccionado: true }, {new: true});
+    return res.json({
+        message: 'Producto seleccionado',
+        product
+    })
+}
+
+export async function seleccionados(req: Request, res:Response): Promise<Response> {
+    const productosseleccionados = await Product.find({seleccionado: true});
+ 
+    return res.json( productosseleccionados)
+}
+
+export async function disponibles(req: Request, res:Response): Promise<Response> {
+    const productosdisponibles = await Product.find({inStock: true});
+ 
+    return res.json( productosdisponibles)
 }

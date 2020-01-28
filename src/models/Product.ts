@@ -1,6 +1,6 @@
 import {Schema, model, Document} from 'mongoose';
 
-const schema = new Schema({
+export const productSchema = new Schema({
     name: String,
     description: String,
     price: Number,
@@ -18,6 +18,7 @@ const schema = new Schema({
     }
 });
 
+
 export interface IProducto extends Document{
     name: string;
     description: string;
@@ -27,23 +28,7 @@ export interface IProducto extends Document{
     seleccionado: boolean;
 }
 
-export class ProductClass{
-    name: string;
-    description: string;
-    price: number;
-    cant: number;
-    inStock: boolean;
 
-    constructor(name: string, description: string, price: number, cant: number, inStock: boolean){
-        this.name = name;
-        this.description = description;
-        this.price=price;
-        this.cant=cant;
-        this.inStock=inStock;
-    }
-
-}
-
-export default  model<IProducto>('Product', schema);
+export default  model<IProducto>('Product', productSchema);
 
 
